@@ -9,19 +9,23 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+load_dotenv()
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-bw+o&h3y-se!ik17se2t53@j)ah@q-od-0ydg5p6$3gpnyihpg'
+# Now access the SECRET_KEY
+SECRET_KEY = os.getenv('SECRET_KEY')
 
+# Optional: Raise an error if SECRET_KEY is not found
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY is not set in the environment or .env file.")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -39,13 +43,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'users',
     'blogs',
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # Adjust if needed
+    "http://localhost:5173", 
 ]
 AUTH_USER_MODEL = 'users.CustomUser'
 
@@ -58,6 +63,18 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ]
+}
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),  
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),  
+    "ROTATE_REFRESH_TOKENS": True,  
+    "BLACKLIST_AFTER_ROTATION": True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,  # Ensure SECRET_KEY is set correctly
+    "VERIFYING_KEY": None,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
 }
 
 
@@ -99,11 +116,11 @@ WSGI_APPLICATION = 'guarded_backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres.enibmtmoqyjkgdovqyoh',
-        'PASSWORD': 'guar@1305',
-        'HOST': 'aws-0-ap-southeast-1.pooler.supabase.com',  # Use the correct host (or IP if remote)
-        'PORT': '5432',  # Default PostgreSQL port
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': os.getenv("DB_PORT"),
     }
 }
 
