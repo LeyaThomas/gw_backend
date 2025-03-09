@@ -16,11 +16,9 @@ class BlogViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        """Allow authors to view only their own blogs."""
-        user = self.request.user
-        if user.role == 'author':
-            return Blog.objects.filter(author=user)
-        return Blog.objects.none()  # No access for non-authors
+       """Return all blogs, irrespective of the user."""
+       return Blog.objects.all().order_by('-created_at')  # Fetch all blogs in descending order
+
 
     def perform_create(self, serializer):
         """Ensure only authors can create blogs."""

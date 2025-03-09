@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Blog, Read, Streak
 from django.contrib.auth import get_user_model
+from datetime import date
 
 # Get CustomUser model
 User = get_user_model()
@@ -37,8 +38,16 @@ class ReadSerializer(serializers.ModelSerializer):
 
 
 class StreakSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    last_read_date = serializers.SerializerMethodField()
 
     class Meta:
         model = Streak
-        fields = ['user', 'streak_count', 'last_read_date']
+        fields = ["streak_count", "last_read_date"]
+
+    def get_last_read_date(self, obj):
+        return obj.last_read_date.strftime("%Y-%m-%d") if obj.last_read_date else None
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data["streak_count"] = data.get("streak_count", 0)  # ✅ Default to 0
+        return data
