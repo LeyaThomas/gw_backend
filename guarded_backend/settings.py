@@ -43,9 +43,9 @@ INSTALLED_APPS = [
     'blogs',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "*", 
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "*", 
+# ]
 AUTH_USER_MODEL = 'users.CustomUser'
 
 CORS_ALLOW_ALL_ORIGINS = True
