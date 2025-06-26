@@ -2,6 +2,7 @@
 # Python compiled files
 *.pyc
 __pycache__/
+git rm --cached -r guarded_backend/__pycache__/
 
 
 
